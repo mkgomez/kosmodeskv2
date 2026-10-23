@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">  
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-97WP9L6C58"></script>
 <script>
@@ -9,8 +11,6 @@
   gtag('js', new Date());
   gtag('config', 'G-97WP9L6C58');
 </script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Páginas web, bots de WhatsApp y CRM a la medida | Kosmodesk</title>
 <meta name="description" content="Páginas web, bots de WhatsApp para citas, CRM y apps a la medida para negocios en México. Cotiza por WhatsApp.">
 <link rel="canonical" href="https://kosmodesk.com/">
@@ -93,7 +93,10 @@
 </script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230B0D12'/%3E%3Ctext x='32' y='44' font-family='Space Grotesk, Arial, sans-serif' font-size='34' font-weight='700' fill='%235AD8FF' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
   :root{
     --bg:#0B0D12;
@@ -105,7 +108,7 @@
     --accent-dim:#5C4E36;
     --text:#EDEBE6;
     --text-dim:#8B8A85;
-    --text-faint:#55534E;
+    --text-faint:#817E76;
     --whatsapp:#3DA35D;
     --neon:#B478FF;
     --link:#5AD8FF;
@@ -555,20 +558,20 @@
         <input type="hidden" name="from_name" value="Formulario Kosmodesk">
         <input type="checkbox" name="botcheck" style="display:none;">
         <div class="form-row">
-          <label>Nombre</label>
-          <input type="text" name="nombre" placeholder="Tu nombre completo" required>
+          <label for="campo-nombre">Nombre</label>
+          <input type="text" id="campo-nombre" name="nombre" placeholder="Tu nombre completo" required>
         </div>
         <div class="form-row">
-          <label>Correo</label>
-          <input type="email" name="correo" placeholder="tucorreo@ejemplo.com" required>
+          <label for="campo-correo">Correo</label>
+          <input type="email" id="campo-correo" name="correo" placeholder="tucorreo@ejemplo.com" required>
         </div>
         <div class="form-row">
-          <label>WhatsApp</label>
-          <input type="tel" name="whatsapp" placeholder="Número con lada">
+          <label for="campo-whatsapp">WhatsApp</label>
+          <input type="tel" id="campo-whatsapp" name="whatsapp" placeholder="Número con lada">
         </div>
         <div class="form-row">
-          <label>¿Qué necesitas?</label>
-          <select name="servicio">
+          <label for="campo-servicio">¿Qué necesitas?</label>
+          <select id="campo-servicio" name="servicio">
             <option>Página web</option>
             <option>Bot de WhatsApp</option>
             <option>CRM básico</option>
@@ -578,8 +581,8 @@
           </select>
         </div>
         <div class="form-row">
-          <label>Mensaje</label>
-          <textarea name="mensaje" rows="4" placeholder="Cuéntanos brevemente tu proyecto..."></textarea>
+          <label for="campo-mensaje">Mensaje</label>
+          <textarea id="campo-mensaje" name="mensaje" rows="4" placeholder="Cuéntanos brevemente tu proyecto..."></textarea>
         </div>
         <button type="submit" class="btn-primary" style="width:100%;">Enviar mensaje</button>
       </form>
@@ -610,7 +613,11 @@
 <script>
 (function(){
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var isMobile = window.matchMedia('(max-width:760px)').matches;
+  var dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+  var fxPaused = document.hidden; // se pausa cuando la pestaña no está visible
+  var fxInViewport = true; // lo mantiene IntersectionObserver más abajo
+  var FRAME_INTERVAL = (isMobile ? 1000/30 : 1000/45); // limita FPS del fondo animado
 
   /* ================= UNIVERSO (estrellas tenues, toda la página) ================= */
   var uCanvas = document.getElementById('bgUniverse');
@@ -652,7 +659,8 @@
     });
 
     var wispColors = ['18,88,138','25,105,155','14,75,120','20,95,145','28,110,160'];
-    for(var i=0;i<90;i++){
+    var wispCount = isMobile ? 40 : 90;
+    for(var i=0;i<wispCount;i++){
       var anchor = nebulaBlobs[Math.floor(Math.random()*nebulaBlobs.length)];
       var wx = anchor.x*UW + (Math.random()-0.5)*anchor.r*Math.max(UW,UH)*0.9;
       var wy = anchor.y*UH + (Math.random()-0.5)*anchor.r*Math.max(UW,UH)*0.9;
@@ -669,7 +677,7 @@
 
   function makeStars(){
     stars = [];
-    var count = Math.floor((UW*UH)/9000);
+    var count = Math.floor((UW*UH)/(isMobile ? 18000 : 9000));
     for(var i=0;i<count;i++){
       var sparkle = Math.random() < 0.07;
       stars.push({
@@ -684,7 +692,7 @@
     /* estrellas "encajadas" dentro de las nubes de la nebulosa, más brillantes y densas */
     nebulaBlobs.forEach(function(b){
       var cx = b.x*UW, cy = b.y*UH, rad = b.r*Math.max(UW,UH)*0.75;
-      var embedCount = 22;
+      var embedCount = isMobile ? 10 : 22;
       for(var i=0;i<embedCount;i++){
         var ang = Math.random()*Math.PI*2;
         var dist = Math.random()*rad;
@@ -739,7 +747,15 @@
       }
     }
   }
-  function loopUniverse(t){ drawUniverse(t||0); requestAnimationFrame(loopUniverse); }
+  var lastUniverseDraw = 0;
+  function loopUniverse(t){
+    t = t||0;
+    if(!fxPaused && fxInViewport && (t-lastUniverseDraw) >= FRAME_INTERVAL){
+      drawUniverse(t);
+      lastUniverseDraw = t;
+    }
+    if(!reduceMotion) requestAnimationFrame(loopUniverse);
+  }
 
   /* ================= GLOBO — continentes en violeta neón + arcos de conexión ================= */
   var gCanvas = document.getElementById('globeCanvas');
@@ -782,8 +798,8 @@
   }
 
   var landDots = [];
-  (function buildLand(){
-    var LAT_STEP = 2.4;
+  function buildLand(){
+    var LAT_STEP = isMobile ? 4 : 2.4;
     for(var la=-85; la<=85; la+=LAT_STEP){
       var lonStep = LAT_STEP / Math.max(0.18, Math.cos(la*Math.PI/180));
       for(var lo=-180; lo<=180; lo+=lonStep){
@@ -792,7 +808,7 @@
         }
       }
     }
-  })();
+  }
 
   var cities = {
     cdmx:[19.4,-99.1], ny:[40.7,-74], londres:[51.5,-0.1], tokio:[35.7,139.7],
@@ -834,6 +850,7 @@
   }
 
   var rotation = 0;
+  var lastRotationT = null;
   var GW, GH;
   var scrollOffset = 0;
   function sizeGlobe(){
@@ -849,7 +866,11 @@
   function drawGlobe(t){
     var cx = GW/2, cy = GH/2 + scrollOffset + 90;
     gCtx.clearRect(0,0,GW,GH);
-    if(!reduceMotion) rotation += 0.0022;
+    if(!reduceMotion){
+      var dt = lastRotationT==null ? 16.67 : (t - lastRotationT);
+      rotation += 0.0022 * (dt / 16.67); // ritmo constante aunque se limiten los FPS
+    }
+    lastRotationT = t;
 
     gCtx.beginPath();
     gCtx.arc(cx,cy,R,0,Math.PI*2);
@@ -878,7 +899,7 @@
       var a3 = toXYZ(cities[link[0]][0], cities[link[0]][1]);
       var b3 = toXYZ(cities[link[1]][0], cities[link[1]][1]);
       var prevPt = null, prevAlpha = 0;
-      var STEPS = 64;
+      var STEPS = isMobile ? 32 : 64;
       for(var k=0;k<=STEPS;k++){
         var tt = k/STEPS;
         var mid = slerp(a3,b3,tt);
@@ -932,7 +953,15 @@
     });
   }
 
-  function loopGlobe(t){ drawGlobe(t||0); requestAnimationFrame(loopGlobe); }
+  var lastGlobeDraw = 0;
+  function loopGlobe(t){
+    t = t||0;
+    if(!fxPaused && fxInViewport && (t-lastGlobeDraw) >= FRAME_INTERVAL){
+      drawGlobe(t);
+      lastGlobeDraw = t;
+    }
+    if(!reduceMotion) requestAnimationFrame(loopGlobe);
+  }
 
   function updateScroll(){
     scrollOffset = window.scrollY * 0.18;
@@ -941,9 +970,44 @@
   function resizeAll(){ sizeUniverse(); buildNebula(); makeStars(); R = computeRadius(); sizeGlobe(); updateScroll(); }
   window.addEventListener('resize', resizeAll);
   window.addEventListener('scroll', updateScroll, {passive:true});
-  resizeAll();
-  requestAnimationFrame(loopUniverse);
-  requestAnimationFrame(loopGlobe);
+
+  /* Pausa el fondo animado cuando la pestaña no está visible */
+  document.addEventListener('visibilitychange', function(){
+    fxPaused = document.hidden;
+  });
+
+  /* Arranca el fondo animado (estrellas + globo) sólo después de que lo importante
+     ya cargó, para no competir por el hilo principal durante el primer render. */
+  /* Arranca el fondo animado en pasos separados (cada uno en su propia tarea del
+     hilo principal) para no generar una sola tarea larga que dispare el TBT. */
+  function startBackgroundFX(){
+    resizeAll();
+    setTimeout(function(){
+      buildLand();
+      setTimeout(function(){
+        if(reduceMotion){
+          /* un solo dibujo estático: nada de rAF continuo para no gastar CPU de más */
+          drawUniverse(0);
+          drawGlobe(0);
+        } else {
+          requestAnimationFrame(loopUniverse);
+          requestAnimationFrame(loopGlobe);
+        }
+        if('IntersectionObserver' in window){
+          var fxObserver = new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){ fxInViewport = entry.isIntersecting; });
+          }, {threshold:0});
+          fxObserver.observe(uCanvas);
+        }
+      }, 0);
+    }, 0);
+  }
+  var idle = window.requestIdleCallback || function(cb){ setTimeout(cb, 1); };
+  if(document.readyState === 'complete'){
+    idle(startBackgroundFX);
+  } else {
+    window.addEventListener('load', function(){ idle(startBackgroundFX); });
+  }
 
   /* ================= MENÚ MÓVIL ================= */
   var navToggle = document.getElementById('navToggle');
@@ -973,14 +1037,20 @@
   /* ================= TILT 3D de tarjetas ================= */
   if(!reduceMotion){
     document.querySelectorAll('.bento-item').forEach(function(card){
+      var rect = null;
+      /* se mide una sola vez al entrar, no en cada mousemove (evita forzar reflow) */
+      card.addEventListener('mouseenter', function(){
+        rect = card.getBoundingClientRect();
+      });
       card.addEventListener('mousemove', function(e){
-        var r = card.getBoundingClientRect();
-        var px = (e.clientX - r.left)/r.width - 0.5;
-        var py = (e.clientY - r.top)/r.height - 0.5;
+        if(!rect) rect = card.getBoundingClientRect();
+        var px = (e.clientX - rect.left)/rect.width - 0.5;
+        var py = (e.clientY - rect.top)/rect.height - 0.5;
         var rx = (-py*10).toFixed(2), ry = (px*12).toFixed(2);
         card.style.transform = 'perspective(700px) rotateX('+rx+'deg) rotateY('+ry+'deg) translateZ(6px)';
       });
       card.addEventListener('mouseleave', function(){
+        rect = null;
         card.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
       });
     });
